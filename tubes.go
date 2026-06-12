@@ -138,11 +138,11 @@ func insertionSortTransaksi(T *arrTransaksi, n int, field int, asc bool) {
 	}
 }
 
-func hitungTotalRekursif(items [10]ItemTransaksi, idx int, jmlItem int) Harga {
+func hitungTotal(items [10]ItemTransaksi, idx int, jmlItem int) Harga {
 	if idx >= jmlItem {
 		return 0
 	}
-	return items[idx].subtotal + hitungTotalRekursif(items, idx+1, jmlItem)
+	return items[idx].subtotal + hitungTotal(items, idx+1, jmlItem)
 }
 
 func tambahBarang(T *arrBarang, n *int) {
@@ -156,7 +156,7 @@ func tambahBarang(T *arrBarang, n *int) {
 		if seqSearchBarang(*T, *n, b.id) != -1 {
 			fmt.Println("ID sudah digunakan, gunakan ID lain!")
 		} else {
-			fmt.Print("Nama Barang(1 kata/pakai underscore): ")
+			fmt.Print("Nama Barang: ")
 			fmt.Scan(&b.nama)
 			fmt.Print("Harga      : ")
 			var h int
@@ -166,11 +166,12 @@ func tambahBarang(T *arrBarang, n *int) {
 			fmt.Scan(&s)
 			fmt.Print("Kategori   : ")
 			fmt.Scan(&b.kategori)
-
-			if h <= 0 {
+			if h <= 0 && s < 0 {
+				fmt.Println("Harga dan stok harus lebih dari 0 !")
+			} else if h <= 0 {
 				fmt.Println("Harga harus lebih dari 0!")
 			} else if s < 0 {
-				fmt.Println("Stok tidak boleh negatif!")
+				fmt.Println("Stok harus lebih dari 0!")
 			} else {
 				b.harga = Harga(h)
 				b.stok = Stok(s)
@@ -197,7 +198,7 @@ func editBarang(T *arrBarang, n int) {
 		} else {
 			fmt.Printf("Data saat ini: ID=%d | Nama=%s | Harga=%d | Stok=%d | Kategori=%s\n",
 				T[idx].id, T[idx].nama, T[idx].harga, T[idx].stok, T[idx].kategori)
-			fmt.Println("Masukkan data baru:")
+			fmt.Println("Masukkan data baru!")
 
 			fmt.Print("Nama Barang: ")
 			fmt.Scan(&T[idx].nama)
@@ -209,11 +210,12 @@ func editBarang(T *arrBarang, n int) {
 			fmt.Scan(&s)
 			fmt.Print("Kategori   : ")
 			fmt.Scan(&T[idx].kategori)
-
-			if h <= 0 {
+			if h <= 0 && s < 0 {
+				fmt.Println("Harga dan stok harus lebih dari 0 !")
+			} else if h <= 0 {
 				fmt.Println("Harga harus lebih dari 0!")
 			} else if s < 0 {
-				fmt.Println("Stok tidak boleh negatif!")
+				fmt.Println("Stok harus lebih dari 0!")
 			} else {
 				T[idx].harga = Harga(h)
 				T[idx].stok = Stok(s)
@@ -254,10 +256,10 @@ func tampilBarang(T arrBarang, n int) {
 		fmt.Println("Belum ada data barang.")
 	} else {
 		fmt.Println("\nUrutkan berdasarkan:")
-		fmt.Println("1. ID (Ascending)")
-		fmt.Println("2. ID (Descending)")
-		fmt.Println("3. Harga (Ascending)")
-		fmt.Println("4. Harga (Descending)")
+		fmt.Println("1. ID (Terkecil)")
+		fmt.Println("2. ID (Terbesar)")
+		fmt.Println("3. Harga (Termurah)")
+		fmt.Println("4. Harga (Termahal)")
 		fmt.Print("Pilih: ")
 		var pSort int
 		fmt.Scan(&pSort)
@@ -271,7 +273,7 @@ func tampilBarang(T arrBarang, n int) {
 		} else if pSort == 4 {
 			selectionSortBarang(&T, n, 2, false)
 		} else {
-			fmt.Println("Pilihan tidak valid, tampil tanpa urutan.")
+			fmt.Println("Pilihan tidak valid, Pilih 1/2/3/4!.")
 		}
 
 		fmt.Println("\n------------------------------------------------------------")
@@ -373,7 +375,7 @@ func tambahTransaksi(TB *arrBarang, nB int, TT *arrTransaksi, nT *int) {
 		if jmlItem == 0 {
 			fmt.Println("Tidak ada item, transaksi dibatalkan.")
 		} else {
-			var total Harga = hitungTotalRekursif(items, 0, jmlItem)
+			var total Harga = hitungTotal(items, 0, jmlItem)
 
 			TT[*nT] = Transaksi{
 				id:      *nT + 1,
@@ -423,7 +425,7 @@ func tampilTransaksi(T arrTransaksi, n int) {
 		} else if pSort == 4 {
 			insertionSortTransaksi(&T, n, 2, false)
 		} else {
-			fmt.Println("Pilihan tidak valid, tampil tanpa urutan.")
+			fmt.Println("Pilihan tidak valid, Pilih 1/2/3/4!.")
 		}
 
 		fmt.Println("\n--------------------------------------------------")
@@ -490,7 +492,11 @@ func awal() bool {
 			fmt.Println("pilihan tidak tersedia!, pilih 1/2.")
 		}
 	}
-	return pilih == 1
+	if pilih == 1 {
+		return true
+	} else {
+		return false
+	}
 }
 
 func menuBarang(nB *int) {
@@ -564,12 +570,12 @@ func menu() {
 			menuBarang(&nBarang)
 		} else if pilih == 2 {
 			menuTransaksi(nBarang, &nTransaksi)
-		} else if pilih != 0 {
+		} else if pilih == 0 {
+			fmt.Println("\nTerima kasih telah menggunakan Meow Mart. Sampai jumpa!")
+		} else {
 			fmt.Println("Pilihan tidak tersedia!, pilih 0/1/2 ")
 		}
 	}
-
-	fmt.Println("\nTerima kasih telah menggunakan MEOW Mart. Sampai jumpa!")
 }
 
 func main() {
