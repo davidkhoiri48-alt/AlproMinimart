@@ -53,14 +53,14 @@ func seqSearchBarang(T arrBarang, n int, idCari int) int {
 func binarySearchBarang(T arrBarang, n int, idCari int) int {
 	var found int = -1
 	var mid int
-	var kr int = 0
-	var kn int = n - 1
-	for kr <= kn && found == -1 {
-		mid = (kr + kn) / 2
+	var left int = 0
+	var right int = n - 1
+	for left <= right && found == -1 {
+		mid = (left + right) / 2
 		if idCari < T[mid].id {
-			kn = mid - 1
+			right = mid - 1
 		} else if idCari > T[mid].id {
-			kr = mid + 1
+			left = mid + 1
 		} else {
 			found = mid
 		}
@@ -277,12 +277,12 @@ func tampilBarang(T arrBarang, n int) {
 		}
 
 		fmt.Println("\n------------------------------------------------------------")
-		fmt.Printf("%-5s %-20s %-12s %-8s %-12s\n", "ID", "Nama", "Harga", "Stok", "Kategori")
+		fmt.Printf("%-5s %-12s %-12s %-12s %-12s\n", "ID", "Nama", "Harga", "Stok", "Kategori")
 		fmt.Println("------------------------------------------------------------")
 		var i int = 0
 		for i < n {
 			b := T[i]
-			fmt.Printf("%-5d %-20s %-12d %-8d %-12s\n",
+			fmt.Printf("%-5d %-11s %-9d %-8d %-9s\n",
 				b.id, b.nama, b.harga, b.stok, b.kategori)
 			i = i + 1
 		}
@@ -477,6 +477,47 @@ func omzetHarian(T arrTransaksi, n int) {
 	}
 }
 
+func LarisKurangLaku(TB arrBarang, nB int, TT arrTransaksi, nT int) {
+	if nB == 0 || nT == 0 {
+		fmt.Println("Belum ada data barang atau transaksi!")
+		return
+	}
+
+	var totalTerjual [NMAX_BARANG]int
+
+	var i, j, k int
+
+	for i = 0; i < nT; i++ {
+		for j = 0; j < TT[i].jmlItem; j++ {
+			for k = 0; k < nB; k++ {
+				if TT[i].items[j].idBarang == TB[k].id {
+					totalTerjual[k] += TT[i].items[j].jumlah
+				}
+			}
+		}
+	}
+
+	var idxMax, idxMin int = 0, 0
+
+	for i = 1; i < nB; i++ {
+		if totalTerjual[i] > totalTerjual[idxMax] {
+			idxMax = i
+		}
+
+		if totalTerjual[i] < totalTerjual[idxMin] {
+			idxMin = i
+		}
+	}
+
+	fmt.Println("\n=== BARANG TERLARIS ===")
+	fmt.Printf("Nama Barang : %s\n", TB[idxMax].nama)
+	fmt.Printf("Total Terjual : %d\n", totalTerjual[idxMax])
+
+	fmt.Println("\n=== BARANG KURANG LAKU ===")
+	fmt.Printf("Nama Barang : %s\n", TB[idxMin].nama)
+	fmt.Printf("Total Terjual : %d\n", totalTerjual[idxMin])
+}
+
 func awal() bool {
 	var pilih int = -1
 	for pilih != 1 && pilih != 2 {
@@ -507,7 +548,7 @@ func menuBarang(nB *int) {
 		fmt.Println("2. Edit Barang")
 		fmt.Println("3. Hapus Barang")
 		fmt.Println("4. Tampil Semua Barang")
-		fmt.Println("5. Cari Barang (Binary Search)")
+		fmt.Println("5. Cari Barang")
 		fmt.Println("0. Kembali")
 		fmt.Print("Pilih: ")
 		fmt.Scan(&pilih)
@@ -535,6 +576,7 @@ func menuTransaksi(nB int, nT *int) {
 		fmt.Println("1. Catat Transaksi Baru")
 		fmt.Println("2. Tampil Semua Transaksi")
 		fmt.Println("3. Omzet Harian")
+		fmt.Println("4. Barang Terlaris & Kurang Laku")
 		fmt.Println("0. Kembali")
 		fmt.Print("Pilih: ")
 		fmt.Scan(&pilih)
@@ -545,8 +587,10 @@ func menuTransaksi(nB int, nT *int) {
 			tampilTransaksi(dataTransaksi, *nT)
 		} else if pilih == 3 {
 			omzetHarian(dataTransaksi, *nT)
+		} else if pilih == 4 {
+			LarisKurangLaku(dataBarang, nB, dataTransaksi, *nT)
 		} else if pilih != 0 {
-			fmt.Println("Pilihan tidak tersedia!, pilih 0/1/2/3")
+			fmt.Println("Pilihan tidak tersedia!, pilih 0/1/2/3/4!")
 		}
 	}
 }
@@ -558,7 +602,7 @@ func menu() {
 
 	for pilih != 0 {
 		fmt.Println("\n============================")
-		fmt.Println("=    KASIR  MEOW MART      =")
+		fmt.Println("=    KASIR  MINIMART      =")
 		fmt.Println("============================")
 		fmt.Println("1. Manajemen Barang")
 		fmt.Println("2. Transaksi")
