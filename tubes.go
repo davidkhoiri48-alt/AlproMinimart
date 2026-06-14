@@ -156,7 +156,7 @@ func tambahBarang(T *arrBarang, n *int) {
 		if seqSearchBarang(*T, *n, b.id) != -1 {
 			fmt.Println("ID sudah digunakan, gunakan ID lain!")
 		} else {
-			fmt.Print("Nama Barang: ")
+			fmt.Print("Nama Barang ( Gunakan 1 Kata/ Tambah Underscore ): ")
 			fmt.Scan(&b.nama)
 			fmt.Print("Harga      : ")
 			var h int
